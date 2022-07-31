@@ -1,0 +1,30 @@
+name: '_Sync_'
+
+on:
+  schedule:
+    - cron:  '6 23 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    permissions:
+      contents: write
+    if: github.repository_owner == 'vlaci'
+    runs-on: ubuntu-latest
+    name: Sync latest commits from upstream repo
+
+    steps:
+    - name: Checkout target repo
+      uses: actions/checkout@v2
+      with:
+        ref:  master
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        fetch-depth: 0
+
+    - name: Sync upstream changes
+      run: |
+        git fetch --shallow-since "1 week ago"
+        git fetch https://github.com/NixOS/nixpkgs nixos-unstable
+        git rebase FETCH_HEAD || { git diff; exit 1; }
+        git push --force-with-lease
