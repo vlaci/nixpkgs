@@ -1,4 +1,4 @@
-name: '_Sync_'
+name: '_Sync to staging_'
 
 on:
   schedule:
@@ -24,7 +24,20 @@ jobs:
 
     - name: Sync upstream changes
       run: |
-        git fetch --shallow-since "1 week ago"
+        git config user.email "github-actions@github.com"
+        git config user.name "Github Actions"
+        git switch -C staging
         git fetch https://github.com/NixOS/nixpkgs nixos-unstable
         git rebase FETCH_HEAD || { git diff; exit 1; }
-        git push --force-with-lease
+        if ! git diff --quiet --exit-code master..HEAD; then
+          git push origin staging --force-with-lease
+          echo "staging_updated=1" >> $GITHUB_ENV
+        fi
+
+    - name: Repository Dispatch
+      if: ${{ env.staging_updated != '' }}
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        repository: vlaci/nixos-config
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        event-type: nixpkgs-update

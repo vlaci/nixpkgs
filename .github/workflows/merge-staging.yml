@@ -1,0 +1,24 @@
+name: '_Merge staging_'
+
+on:
+  repository_dispatch:
+    types: [nixpkgs-update-ok]
+
+jobs:
+  sync_latest_from_upstream:
+    permissions:
+      contents: write
+    if: github.repository_owner == 'vlaci'
+    runs-on: ubuntu-latest
+    name: Merge synced changes
+
+    steps:
+    - name: Checkout target repo
+      uses: actions/checkout@v2
+      with:
+        ref: master
+
+    - name: Sync upstream changes
+      run: |
+        git fetch origin --shallow-since "1 week ago" staging
+        git push origin --force-with-lease origin/staging:master
