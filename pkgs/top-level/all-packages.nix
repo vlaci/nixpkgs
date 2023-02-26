@@ -23697,7 +23697,7 @@ with pkgs;
 
   vcg = callPackage ../development/libraries/vcg { };
 
-  vectorscan = callPackage ../development/libraries/hyperscan/vectorscan.nix { };
+  vectorscan = callPackage ../development/libraries/vectorscan { };
 
   vid-stab = callPackage ../development/libraries/vid-stab {
     inherit (llvmPackages) openmp;

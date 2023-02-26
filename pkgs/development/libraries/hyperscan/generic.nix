@@ -30,9 +30,12 @@ args@{ meta, ... }: stdenv.mkDerivation (args // {
   cmakeFlags = lib.optionals (stdenv.isx86_64 && stdenv.isLinux) [
     "-DFAT_RUNTIME=ON"
     "-DBUILD_AVX512=ON"
+    "-DBUILD_SVE2_BITPERM=ON"
   ]
   ++ lib.optional (withStatic) "-DBUILD_STATIC_AND_SHARED=ON"
   ++ lib.optional (!withStatic) "-DBUILD_SHARED_LIBS=ON";
+
+  doCheck = false;
 
   postPatch = ''
     sed -i '/examples/d' CMakeLists.txt

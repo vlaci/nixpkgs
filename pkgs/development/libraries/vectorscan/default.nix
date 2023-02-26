@@ -10,9 +10,12 @@
 , withStatic ? false # build only shared libs by default, build static+shared if true
 }:
 
-stdenv.mkDerivation rec {
+let
   pname = "vectorscan";
   version = "5.4.8";
+in
+stdenv.mkDerivation {
+  inherit pname version;
 
   src = fetchFromGitHub {
     owner = "VectorCamp";
@@ -37,8 +40,9 @@ stdenv.mkDerivation rec {
     "-DFAT_RUNTIME=ON"
     "-DBUILD_AVX512=ON"
   ]
+  ++ lib.optional (stdenv.isAarch64) "-DBUILD_SVE2_BITPERM=ON"
   ++ lib.optional (withStatic) "-DBUILD_STATIC_AND_SHARED=ON"
-  ++ lib.optional (!withStatic) "-DBUILD_SHARED_LIBS=ON";
+  ++ lib.optional (!withStatic && !stdenv.isAarch64) "-DBUILD_SHARED_LIBS=ON";
 
   postPatch = ''
     sed -i '/examples/d' CMakeLists.txt
