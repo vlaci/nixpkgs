@@ -19,7 +19,10 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ zlib ];
 
-  makeFlags = [ "PREFIX=$(out)" "DEP_CXX:=$(CXX)" ];
+  makeFlags = [
+    "PREFIX=$(out)"
+    "DEP_CXX:=$(CXX)"
+  ];
 
   patches = [
     (fetchpatch {
@@ -34,6 +37,9 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/anestisb/android-simg2img";
     license = licenses.asl20;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ dezgeg arkivm ];
+    maintainers = with maintainers; [
+      dezgeg
+      arkivm
+    ];
   };
 }
