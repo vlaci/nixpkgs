@@ -1,4 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, zlib }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchpatch,
+  zlib,
+}:
 
 stdenv.mkDerivation rec {
   pname = "simg2img";
@@ -14,6 +20,14 @@ stdenv.mkDerivation rec {
   buildInputs = [ zlib ];
 
   makeFlags = [ "PREFIX=$(out)" "DEP_CXX:=$(CXX)" ];
+
+  patches = [
+    (fetchpatch {
+      name = "PR-38-Fix-for-Apple-Silicon.patch";
+      url = "https://github.com/anestisb/android-simg2img/commit/931df9dd83e7feea11197402c5b4e7ad489f4abf.patch";
+      hash = "sha256-+vHdx+nwaeaLf7a/hZSAVECc/Q5nQ1G2i0eTOVHb8Ks=";
+    })
+  ];
 
   meta = with lib; {
     description = "Tool to convert Android sparse images to raw images";
